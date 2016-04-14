@@ -1,88 +1,69 @@
+(function($) {
+    $(function() {
 
-var book = Backbone.Model.extend({
-    default: {
-        ISBN: '',
-        title: '',
-        subtitle: '',
-        url: '',
-        number_of_pages: ''
-    },
-    urlRoot: 'find'
-});
-
-
-
-var books = Backbone.Collection.extend({
-
-    model: book
-
-});
-
-
-
-
-var booksView = Backbone.View.extend({
-
-    render: function(){
-        if(document.getElementById("myForm") === book.get('ISBN'))
-        {
-
-            var self = this;
-            $('#tr');
-
-            _.each(this.collection.models, function(book) {
-                self.renderBook();
-            }, this);
-
-        }else{
-            alert("Invalid number, please try again!");
-        }
-    },
-
-    renderBook: function(book){
-        var newbook = app.views.book({
-            model: book
+        var BookModel = Backbone.Model.extend({
+            defaults: function() {
+                return{
+                    title: '',
+                    subtitle: '',
+                    url: '',
+                    number_of_pages: ''
+                }
+            },
+            urlRoot: 'find'
         });
-        $('#tr').append(newbook.render().el);
 
-    }
+        var BooksCollection = Backbone.Collection.extend({
+            model: BookModel
+        });
 
-});
+        var BookRowView = Backbone.View.extend({
+            tagName: 'tr',
 
+            template: _.template($('#book-template').html()),
 
-function loadDoc(e) {
-    e.preventDefault();
+            render: function() {
+                this.$el.html(this.template(this.model.attributes));
+                return this;
+            }
+        });
 
-    var userInput = $('#search').val();
+        var BooksTableView = Backbone.View.extend({
+            el: '#table-body',
 
-    var newBook = new book({
-        id: userInput
+            initialize: function() {
+                this.listenTo(this.collection, 'reset', this.render);
+            },
+
+            render: function() {
+                this.$el.html('');
+
+                this.collection.each(function(model) {
+                    var bookRowView = new BookRowView({
+                        model: model
+                    });
+
+                    this.$el.append(bookRowView.render().el);
+                }.bind(this));
+
+                return this;
+            }
+        });
+
+        var booksCollection = new BooksCollection();
+        var booksTableView = new BooksTableView({collection: booksCollection});
+
+        $('#book-search-form').on('submit', function() {
+            var bookIds = $('#search-text').val();
+
+            $.ajax('/find/' + bookIds.replace(/\s+/g, ''))
+                .done(function(data) {
+                    booksTableView.collection.reset(data);
+                });
+
+            return false;
+        });
+
     });
 
-    newBook.fetch({
-
-        success: function(data){
-            console.log(data);
-            $('#book1-title').html(data.get('title'));
-            $('#book1-subtitle').html(data.get('subtitle'));
-            $('#book1-url').html(data.get('url'));
-            $('#book1-pages').html(data.get('number_of_pages'));
-        }
-    });
-
-
-
-
-    return false;
-}
-
-
-
-
-
-
-
-
-
-
-
+})(jQuery);

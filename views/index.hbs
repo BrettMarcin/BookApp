@@ -1,39 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{title}}</title>
-    <script type="text/javascript" src="/bower_components/underscore/underscore.js"></script>
-    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="/bower_components/backbone/backbone.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script type="text/javascript" src="/javascripts/scripts.js"></script>
-</head>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-
-<form id="myForm" class="form-wrapper" onsubmit="loadDoc(event)">
-    <input type="text" id="search" placeholder="Search for..." required>
+<form id="book-search-form" class="form-wrapper" >
+    <input type="text" id="search-text" placeholder="Search for..." required>
     <input type="submit" value="Search" id="submit">
 </form>
 
-
 <table border="1" style="width:100%">
+    <thead>
     <tr>
         <th>Title</th>
         <th>Sub-Title</th>
         <th>Pages</th>
         <th>URL</th>
     </tr>
-<tr>
-    <td id="book1-title"></td>
-    <td id="book1-subtitle"></td>
-    <td id="book1-pages"></td>
-    <td id="book1-url"></td>
-</tr>
+    </thead>
+    <tbody id="table-body"></tbody>
 </table>
 
-
-
-
-</html>
-
-
+<script type="text/template" id="book-template">
+    <td><%= title %></td>
+    <td><%= subtitle %></td>
+    <td><%= number_of_pages %></td>
+    <td><%= url %></td>
+</script>
